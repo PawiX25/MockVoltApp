@@ -3,6 +3,7 @@ package com.pawix25.mockvolt;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputType;
@@ -85,6 +86,9 @@ public class MainActivity extends ComponentActivity {
 
         // Open GitHub profile when GitHub icon is clicked
         githubIcon.setOnClickListener(view -> openGitHubProfile());
+
+        // Update GitHub icon based on theme
+        updateGitHubIcon();
     }
 
     private void showCustomLevelDialog() {
@@ -154,5 +158,16 @@ public class MainActivity extends ComponentActivity {
     private void openGitHubProfile() {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/pawix25"));
         startActivity(intent);
+    }
+
+    private void updateGitHubIcon() {
+        int nightModeFlags = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+        if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
+            // Dark mode
+            githubIcon.setImageResource(R.drawable.github_light);
+        } else {
+            // Light mode
+            githubIcon.setImageResource(R.drawable.github);
+        }
     }
 }
