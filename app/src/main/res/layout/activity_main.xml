@@ -58,4 +58,35 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/resetButton"/>
+
+    <LinearLayout
+        android:id="@+id/aboutLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/resetButton"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp">
+
+        <TextView
+            android:id="@+id/aboutTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Made by PawiX25"
+            android:textSize="16sp"
+            android:layout_gravity="center_vertical"/>
+
+        <ImageView
+            android:id="@+id/githubIcon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/github"
+        android:contentDescription="GitHub"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="8dp"/>
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

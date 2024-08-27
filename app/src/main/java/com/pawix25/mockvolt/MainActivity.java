@@ -2,10 +2,15 @@ package com.pawix25.mockvolt;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputType;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,6 +30,7 @@ public class MainActivity extends ComponentActivity {
     private Button applyButton;
     private Button resetButton;
     private Button customLevelButton;
+    private ImageView githubIcon;
     private RootBeer rootBeer;
 
     @Override
@@ -39,6 +45,7 @@ public class MainActivity extends ComponentActivity {
         applyButton = findViewById(R.id.button);
         resetButton = findViewById(R.id.resetButton);
         customLevelButton = findViewById(R.id.customLevelButton);
+        githubIcon = findViewById(R.id.githubIcon);
 
         // Initialize RootBeer
         rootBeer = new RootBeer(this);
@@ -75,6 +82,9 @@ public class MainActivity extends ComponentActivity {
 
         // Show custom level dialog when Custom Level button is clicked
         customLevelButton.setOnClickListener(view -> showCustomLevelDialog());
+
+        // Open GitHub profile when GitHub icon is clicked
+        githubIcon.setOnClickListener(view -> openGitHubProfile());
     }
 
     private void showCustomLevelDialog() {
@@ -139,5 +149,10 @@ public class MainActivity extends ComponentActivity {
             e.printStackTrace();
             Toast.makeText(this, "Failed to reset battery level.", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void openGitHubProfile() {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/pawix25"));
+        startActivity(intent);
     }
 }
