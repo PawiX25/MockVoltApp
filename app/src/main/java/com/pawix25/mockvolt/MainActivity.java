@@ -18,7 +18,8 @@ public class MainActivity extends ComponentActivity {
 
     private SeekBar seekBar;
     private TextView textView;
-    private Button button;
+    private Button applyButton;
+    private Button resetButton;
     private RootBeer rootBeer;
 
     @Override
@@ -30,7 +31,8 @@ public class MainActivity extends ComponentActivity {
         ConstraintLayout mainLayout = findViewById(R.id.main);
         seekBar = findViewById(R.id.seekBar);
         textView = findViewById(R.id.textView);
-        button = findViewById(R.id.button);
+        applyButton = findViewById(R.id.button);
+        resetButton = findViewById(R.id.resetButton);
 
         // Initialize RootBeer
         rootBeer = new RootBeer(this);
@@ -59,8 +61,11 @@ public class MainActivity extends ComponentActivity {
             public void onStopTrackingTouch(SeekBar seekBar) {}
         });
 
-        // Apply battery level when button is clicked
-        button.setOnClickListener(view -> setBatteryLevel(seekBar.getProgress()));
+        // Apply battery level when Apply button is clicked
+        applyButton.setOnClickListener(view -> setBatteryLevel(seekBar.getProgress()));
+
+        // Reset battery level to default value when Reset button is clicked
+        resetButton.setOnClickListener(view -> resetBatteryLevel());
     }
 
     private void setBatteryLevel(int level) {
@@ -77,6 +82,26 @@ public class MainActivity extends ComponentActivity {
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             Toast.makeText(this, "Failed to set battery level.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void resetBatteryLevel() {
+        if (!rootBeer.isRooted()) {
+            Toast.makeText(this, "Device is not rooted or root access not granted.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        // Reset battery to default values
+        String command = "dumpsys battery reset";
+        try {
+            Process process = Runtime.getRuntime().exec(new String[]{"su", "-c", command});
+            process.waitFor();
+            seekBar.setProgress(50);
+            textView.setText("Battery Level: 50%");
+            Toast.makeText(this, "Battery level reset to default.", Toast.LENGTH_SHORT).show();
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Failed to reset battery level.", Toast.LENGTH_SHORT).show();
         }
     }
 }
