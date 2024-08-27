@@ -4,11 +4,13 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.activity.ComponentActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import com.scottyab.rootbeer.RootBeer;
 
 import java.io.IOException;
 
@@ -17,6 +19,7 @@ public class MainActivity extends ComponentActivity {
     private SeekBar seekBar;
     private TextView textView;
     private Button button;
+    private RootBeer rootBeer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +31,9 @@ public class MainActivity extends ComponentActivity {
         seekBar = findViewById(R.id.seekBar);
         textView = findViewById(R.id.textView);
         button = findViewById(R.id.button);
+
+        // Initialize RootBeer
+        rootBeer = new RootBeer(this);
 
         // Adjust padding for system bars
         ViewCompat.setOnApplyWindowInsetsListener(mainLayout, (v, insets) -> {
@@ -58,12 +64,19 @@ public class MainActivity extends ComponentActivity {
     }
 
     private void setBatteryLevel(int level) {
+        if (!rootBeer.isRooted()) {
+            Toast.makeText(this, "Device is not rooted or root access not granted.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
         String command = "dumpsys battery set level " + level;
         try {
             Process process = Runtime.getRuntime().exec(new String[]{"su", "-c", command});
             process.waitFor();
+            Toast.makeText(this, "Battery level set to " + level + "%", Toast.LENGTH_SHORT).show();
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
+            Toast.makeText(this, "Failed to set battery level.", Toast.LENGTH_SHORT).show();
         }
     }
 }
