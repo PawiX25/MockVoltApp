@@ -1,7 +1,11 @@
 package com.pawix25.mockvolt;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.InputType;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,6 +24,7 @@ public class MainActivity extends ComponentActivity {
     private TextView textView;
     private Button applyButton;
     private Button resetButton;
+    private Button customLevelButton;
     private RootBeer rootBeer;
 
     @Override
@@ -33,6 +38,7 @@ public class MainActivity extends ComponentActivity {
         textView = findViewById(R.id.textView);
         applyButton = findViewById(R.id.button);
         resetButton = findViewById(R.id.resetButton);
+        customLevelButton = findViewById(R.id.customLevelButton);
 
         // Initialize RootBeer
         rootBeer = new RootBeer(this);
@@ -66,6 +72,36 @@ public class MainActivity extends ComponentActivity {
 
         // Reset battery level to default value when Reset button is clicked
         resetButton.setOnClickListener(view -> resetBatteryLevel());
+
+        // Show custom level dialog when Custom Level button is clicked
+        customLevelButton.setOnClickListener(view -> showCustomLevelDialog());
+    }
+
+    private void showCustomLevelDialog() {
+        // Create an EditText for user input
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_NUMBER);
+
+        new AlertDialog.Builder(this)
+                .setTitle("Set Custom Battery Level")
+                .setMessage("Enter a battery level (0-100):")
+                .setView(input)
+                .setPositiveButton("Set", (dialog, which) -> {
+                    // Get user input and set battery level
+                    String inputText = input.getText().toString();
+                    try {
+                        int level = Integer.parseInt(inputText);
+                        if (level >= 0 && level <= 100) {
+                            setBatteryLevel(level);
+                        } else {
+                            Toast.makeText(this, "Please enter a value between 0 and 100.", Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (NumberFormatException e) {
+                        Toast.makeText(this, "Invalid input. Please enter a valid number.", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
     }
 
     private void setBatteryLevel(int level) {
