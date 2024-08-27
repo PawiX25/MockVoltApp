@@ -8,11 +8,11 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
 
     - name: Set up JDK 17
       uses: actions/setup-java@v4
@@ -26,4 +26,9 @@ jobs:
 
     - name: Build with Gradle
       run: ./gradlew build
-      
+
+    - name: Upload APKs
+      uses: actions/upload-artifact@v3
+      with:
+        name: android-apks
+        path: '**/*.apk'
