@@ -74,6 +74,13 @@ public class MainActivity extends ComponentActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 textView.setText("Battery Level: " + progress + "%");
+                if (chargingSwitch.isChecked()) {
+                    // Simulate charging state change when SeekBar is adjusted
+                    toggleCharging(true);
+                } else {
+                    // Ensure battery level is updated if not charging
+                    setBatteryLevel(progress);
+                }
             }
 
             @Override
@@ -118,6 +125,7 @@ public class MainActivity extends ComponentActivity {
                         int level = Integer.parseInt(inputText);
                         if (level >= 0 && level <= 100) {
                             setBatteryLevel(level);
+                            seekBar.setProgress(level); // Update SeekBar to match custom level
                         } else {
                             Toast.makeText(this, "Please enter a value between 0 and 100.", Toast.LENGTH_SHORT).show();
                         }
@@ -140,6 +148,7 @@ public class MainActivity extends ComponentActivity {
             Process process = Runtime.getRuntime().exec(new String[]{"su", "-c", command});
             process.waitFor();
             Toast.makeText(this, "Battery level set to " + level + "%", Toast.LENGTH_SHORT).show();
+            updateBatteryStatus(); // Update battery status after setting level
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             Toast.makeText(this, "Failed to set battery level.", Toast.LENGTH_SHORT).show();
@@ -214,10 +223,25 @@ public class MainActivity extends ComponentActivity {
 
             // Get charging status
             int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+            int chargePlug = batteryStatus.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1);
+
             boolean isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING || status == BatteryManager.BATTERY_STATUS_FULL;
+            boolean usbCharge = chargePlug == BatteryManager.BATTERY_PLUGGED_USB;
+            boolean acCharge = chargePlug == BatteryManager.BATTERY_PLUGGED_AC;
+
+            String chargingSource = "Not Charging";
+            if (isCharging) {
+                if (usbCharge) {
+                    chargingSource = "Charging via USB";
+                } else if (acCharge) {
+                    chargingSource = "Charging via AC";
+                } else {
+                    chargingSource = "Charging";
+                }
+            }
 
             // Update the TextView with battery status
-            batteryStatusTextView.setText(String.format("Battery Level: %.0f%% - %s", batteryPct, isCharging ? "Charging" : "Not Charging"));
+            batteryStatusTextView.setText(String.format("Battery Level: %.0f%% - %s", batteryPct, chargingSource));
         } else {
             batteryStatusTextView.setText("Battery Status: Unable to retrieve.");
         }
