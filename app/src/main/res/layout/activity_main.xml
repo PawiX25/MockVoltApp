@@ -18,6 +18,17 @@
         app:layout_constraintTop_toTopOf="parent"
         android:textSize="18sp"/>
 
+    <TextView
+        android:id="@+id/batteryStatusTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Battery Status: Unknown"
+        app:layout_constraintTop_toBottomOf="@id/textView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:textSize="16sp"
+        android:layout_marginTop="8dp"/>
+
     <SeekBar
         android:id="@+id/seekBar"
         android:layout_width="0dp"
@@ -27,7 +38,7 @@
         app:layout_constraintBottom_toTopOf="@id/button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textView"/>
+        app:layout_constraintTop_toBottomOf="@id/batteryStatusTextView"/>
 
     <Button
         android:id="@+id/button"

@@ -3,8 +3,10 @@ package com.pawix25.mockvolt;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.net.Uri;
+import android.os.BatteryManager;
 import android.os.Bundle;
 import android.text.InputType;
 import android.widget.Button;
@@ -27,6 +29,7 @@ public class MainActivity extends ComponentActivity {
 
     private SeekBar seekBar;
     private TextView textView;
+    private TextView batteryStatusTextView;
     private Button applyButton;
     private Button resetButton;
     private Button customLevelButton;
@@ -43,6 +46,7 @@ public class MainActivity extends ComponentActivity {
         ConstraintLayout mainLayout = findViewById(R.id.main);
         seekBar = findViewById(R.id.seekBar);
         textView = findViewById(R.id.textView);
+        batteryStatusTextView = findViewById(R.id.batteryStatusTextView);
         applyButton = findViewById(R.id.button);
         resetButton = findViewById(R.id.resetButton);
         customLevelButton = findViewById(R.id.customLevelButton);
@@ -61,6 +65,9 @@ public class MainActivity extends ComponentActivity {
 
         // Set initial value for text view
         textView.setText("Battery Level: " + seekBar.getProgress() + "%");
+
+        // Update battery status on create
+        updateBatteryStatus();
 
         // Update text view as SeekBar is changed
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -152,6 +159,7 @@ public class MainActivity extends ComponentActivity {
             process.waitFor();
             seekBar.setProgress(50);
             textView.setText("Battery Level: 50%");
+            updateBatteryStatus(); // Update battery status after resetting
             Toast.makeText(this, "Battery level reset to default.", Toast.LENGTH_SHORT).show();
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
@@ -170,6 +178,7 @@ public class MainActivity extends ComponentActivity {
             Process process = Runtime.getRuntime().exec(new String[]{"su", "-c", command});
             process.waitFor();
             String message = isCharging ? "Simulating charging." : "Simulating battery unplugged.";
+            updateBatteryStatus(); // Update battery status after toggling charging
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
@@ -190,6 +199,27 @@ public class MainActivity extends ComponentActivity {
         } else {
             // Light mode
             githubIcon.setImageResource(R.drawable.github);
+        }
+    }
+
+    private void updateBatteryStatus() {
+        IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+        Intent batteryStatus = registerReceiver(null, ifilter);
+
+        if (batteryStatus != null) {
+            // Get battery level
+            int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+            int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+            float batteryPct = level / (float) scale * 100;
+
+            // Get charging status
+            int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+            boolean isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING || status == BatteryManager.BATTERY_STATUS_FULL;
+
+            // Update the TextView with battery status
+            batteryStatusTextView.setText(String.format("Battery Level: %.0f%% - %s", batteryPct, isCharging ? "Charging" : "Not Charging"));
+        } else {
+            batteryStatusTextView.setText("Battery Status: Unable to retrieve.");
         }
     }
 }
