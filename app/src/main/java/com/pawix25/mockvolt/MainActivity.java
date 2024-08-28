@@ -7,19 +7,18 @@ import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputType;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.activity.ComponentActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import com.scottyab.rootbeer.RootBeer;
 
 import java.io.IOException;
@@ -31,6 +30,7 @@ public class MainActivity extends ComponentActivity {
     private Button applyButton;
     private Button resetButton;
     private Button customLevelButton;
+    private Switch chargingSwitch;
     private ImageView githubIcon;
     private RootBeer rootBeer;
 
@@ -46,6 +46,7 @@ public class MainActivity extends ComponentActivity {
         applyButton = findViewById(R.id.button);
         resetButton = findViewById(R.id.resetButton);
         customLevelButton = findViewById(R.id.customLevelButton);
+        chargingSwitch = findViewById(R.id.chargingSwitch);
         githubIcon = findViewById(R.id.githubIcon);
 
         // Initialize RootBeer
@@ -83,6 +84,9 @@ public class MainActivity extends ComponentActivity {
 
         // Show custom level dialog when Custom Level button is clicked
         customLevelButton.setOnClickListener(view -> showCustomLevelDialog());
+
+        // Toggle charging state when Switch is changed
+        chargingSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> toggleCharging(isChecked));
 
         // Open GitHub profile when GitHub icon is clicked
         githubIcon.setOnClickListener(view -> openGitHubProfile());
@@ -152,6 +156,24 @@ public class MainActivity extends ComponentActivity {
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             Toast.makeText(this, "Failed to reset battery level.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void toggleCharging(boolean isCharging) {
+        if (!rootBeer.isRooted()) {
+            Toast.makeText(this, "Device is not rooted or root access not granted.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        String command = isCharging ? "dumpsys battery set ac 1" : "dumpsys battery unplug";
+        try {
+            Process process = Runtime.getRuntime().exec(new String[]{"su", "-c", command});
+            process.waitFor();
+            String message = isCharging ? "Simulating charging." : "Simulating battery unplugged.";
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Failed to toggle charging state.", Toast.LENGTH_SHORT).show();
         }
     }
 
