@@ -30,6 +30,7 @@ MockVolt utilizes the `dumpsys` command to manipulate battery settings on your A
     ```shell
     dumpsys battery set ac 1
     ```
+
   - To simulate the device being unplugged (not charging):
     ```shell
     dumpsys battery unplug
@@ -60,3 +61,9 @@ This app requires a rooted Android device. You can download and install the APK 
 
 - **Root Access**: This app requires root access to manipulate system-level battery settings. If the device is not rooted, the app will not be able to perform these actions and will notify the user.
 - **Android 5.0 (Lollipop) or higher**: The app is compatible with devices running Android Lollipop or later.
+
+## Screenshot
+
+Below is a screenshot of the MockVolt application:
+
+![MockVolt Screenshot](https://github.com/user-attachments/assets/2832311c-962c-43a8-8309-e777574bd5fe)
